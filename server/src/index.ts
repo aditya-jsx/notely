@@ -8,14 +8,23 @@ import { NoteModel } from "./db";
 import { Auth } from "./middleware";
 import { JWT_USER_PASSWORD } from "./config";
 import { MONGO_URL } from "./config";
+import { sendVerificationEmail } from "./utils/mailer";
+import passport = require("passport");
+import { CLIENT_URL } from "./config";
+import "./auth/passport";
+
 
 const app = express();
 app.use(express.json());
+app.use(passport.initialize());
+
+
 
 
 app.post("/api/v1/signup", async (req, res)=>{
 
     const requiredBody = z.object({
+        name: z.string().min(1, "Name is required"),
         email: z.string().email(),
         password: z
          .string()
@@ -33,47 +42,152 @@ app.post("/api/v1/signup", async (req, res)=>{
         })
     }
 
-    const { email, password } = parsedData.data;
+    const { name, email, password } = parsedData.data;
 
     try{
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         const existingUser = await UserModel.findOne({ email: email })
-        if(existingUser){
+
+        if(existingUser && existingUser.isVerified){
             return res.status(400).json({
-                msg: "User with this email already exists"
+                msg: "User with this email already exists and is verified"
             })
         }
 
-        await UserModel.create({
-            email: email,
-            password: hashedPassword
-        })
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+
+        if (existingUser) {
+            // If user exists but is not verified, updating their info and resending OTP
+            existingUser.name = name;
+            existingUser.password = hashedPassword;
+            existingUser.otp = otp;
+            existingUser.otpExpiry = otpExpiry;
+            await existingUser.save();
+        } else {
+            // Otherwise, create a new user
+            await UserModel.create({
+                name: name,
+                email: email,
+                password: hashedPassword,
+                otp: otp,
+                otpExpiry: otpExpiry,
+                isVerified: false,
+            });
+        }
+
+        await sendVerificationEmail(email, otp);
 
         return res.status(200).json({
-            msg: "Signup Completed"
+            msg: "Signup Completed, please check you email for the otp"
         })
 
     }catch(e){
 
-        console.error("Database error occured during signup", e);
-        if (e instanceof Error) {
+       console.error("Error during signup", e);
         return res.status(500).json({
             msg: "An unexpected error occurred during signup",
-            error: e.message 
-        })
-
-        }else{
-
-        return res.status(500).json({
-            msg: "An unexpected and unknown error occurred",
-            error: String(e)
         });
 
-        }
     }
 });
+
+
+
+
+app.post("/api/v1/verify-otp", async (req, res) => {
+    const otpBody = z.object({
+        email: z.string().email(),
+        otp: z.string().length(6, "OTP must be 6 digits"),
+    });
+
+    const parsedData = otpBody.safeParse(req.body);
+    if (!parsedData.success) {
+        return res.status(400).json({
+            msg: "Invalid input format",
+            error: parsedData.error.flatten()
+        });
+    }
+
+    const { email, otp } = parsedData.data;
+
+    try {
+        const user = await UserModel.findOne({ email: email });
+
+        if (!user) {
+            return res.status(404).json({ msg: "User not found." });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ msg: "Email is already verified." });
+        }
+        
+        // Checkick if the OTP is correct and not expired
+        if (user.otp !== otp || (user.otpExpiry && user.otpExpiry < new Date())) {
+            return res.status(400).json({ msg: "Invalid or expired OTP." });
+        }
+
+        // Mark user as verified and remove OTP fields
+        await UserModel.updateOne({ _id: user._id }, {
+            $set: { isVerified: true },
+            $unset: { otp: 1, otpExpiry: 1 } // Use $unset to remove the fields
+        });
+        
+        // Generate JWT
+        if (!JWT_USER_PASSWORD) {
+            console.error("JWT secret is not configured.");
+            return res.status(500).json({ msg: "Server configuration error." });
+        }
+        const token = jwt.sign({ userId: user._id.toString() }, JWT_USER_PASSWORD);
+
+        return res.status(200).json({
+            msg: "Email verified successfully.",
+            token: token
+        });
+
+    } catch (e) {
+        console.error("Error during OTP verification:", e);
+        return res.status(500).json({ msg: "An internal server error occurred." });
+    }
+});
+
+
+
+
+app.get("/api/v1/auth/google", 
+    passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+
+
+
+app.get("/api/v1/auth/google/callback", 
+    // Authenticate the user with 'google' strategy, disable sessions
+    passport.authenticate("google", { session: false }), 
+    (req, res) => {
+        // At this point, `req.user` is populated by Passport with the user from the database
+        const user: any = req.user;
+
+        if (!user) {
+            return res.status(401).json({ msg: "Authentication failed." });
+        }
+
+        // Generate a JWT for the user
+        if (!JWT_USER_PASSWORD) {
+            return res.status(500).json({ msg: "Server configuration error." });
+        }
+        const token = jwt.sign({ userId: user._id.toString() }, JWT_USER_PASSWORD);
+
+        // Redirect the user back to the frontend with the token
+        res.redirect(`${CLIENT_URL}/?token=${token}`);
+    }
+);
+
+
+
 
 app.post("/api/v1/signin", async (req, res)=>{
 
@@ -193,6 +307,10 @@ app.post("/api/v1/note", Auth, async (req, res)=>{
         
     }
 });
+
+
+
+
 
 app.delete("/api/v1/note/:noteId", Auth,  async (req, res)=>{
 
