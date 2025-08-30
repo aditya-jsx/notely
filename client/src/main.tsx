@@ -35,6 +35,7 @@ import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
