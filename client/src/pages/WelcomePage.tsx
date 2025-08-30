@@ -17,7 +17,7 @@ const WelcomePage = () => {
   const fetchNotes = async () => {
     try {
       const response = await getNotes();
-      setNotes(response.data.notes);
+      setNotes(response.data.content);
     } catch (error) {
       console.error('Failed to fetch notes:', error);
     } finally {

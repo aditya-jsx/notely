@@ -1,4 +1,5 @@
 import express = require("express");
+import cors = require("cors");
 import mongoose = require("mongoose");
 import jwt = require("jsonwebtoken");
 import z = require("zod");
@@ -15,6 +16,8 @@ import "./auth/passport";
 
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 

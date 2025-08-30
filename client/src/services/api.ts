@@ -33,6 +33,6 @@ api.interceptors.request.use(
 export const signupUser = (data: any) => api.post('/signup', data);
 export const verifyOtp = (data: any) => api.post('/verify-otp', data);
 export const signinUser = (data: any) => api.post('/signin', data);
-export const getNotes = () => api.get<{ notes: Note[] }>('/note');
+export const getNotes = () => api.get<{ content: Note[] }>('/note');
 export const createNote = (data: { title: string; content: string }) => api.post('/note', data);
 export const deleteNote = (noteId: string) => api.delete(`/note/${noteId}`);
