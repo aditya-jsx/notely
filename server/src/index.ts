@@ -348,29 +348,29 @@ app.delete("/api/v1/note/:noteId", Auth,  async (req, res)=>{
 
 
 
-// app.get("/api/v1/note", Auth, async (req, res)=>{
+app.get("/api/v1/note", Auth, async (req, res)=>{
 
-//     const userId = req.userId;
+    const userId = req.userId;
 
-//     try{
+    try{
 
-//         const content = await NoteModel.find({
-//             userId: userId
-//         })
-//         .populate("userId", "email")
+        const content = await NoteModel.find({
+            userId: userId
+        })
+        .populate("userId", "email")
 
-//         return res.status(200).json({
-//             content
-//         })
+        return res.status(200).json({
+            content
+        })
 
-//     }catch(e){
+    }catch(e){
 
-//         return res.status(403).json({
-//             msg: "Failed to get the contents"
-//         })
+        return res.status(403).json({
+            msg: "Failed to get the contents"
+        })
 
-//     }
-// });
+    }
+});
 
 
 
