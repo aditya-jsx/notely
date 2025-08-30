@@ -30,3 +30,5 @@ export const signinUser = (data: any) => api.post('/signin', data);
 export const getNotes = () => api.get<{ content: Note[] }>('/note');
 export const createNote = (data: { title: string; content: string }) => api.post('/note', data);
 export const deleteNote = (noteId: string) => api.delete(`/note/${noteId}`);
+
+export const verifyGoogleToken = (credential: string) => api.post('/auth/google/verify', { credential });
