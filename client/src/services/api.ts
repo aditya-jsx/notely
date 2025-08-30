@@ -1,8 +1,5 @@
-// src/services/api.ts
-
 import axios from 'axios';
 
-// Define the shape of a Note for TypeScript
 export interface Note {
   _id: string;
   title: string;
@@ -10,12 +7,10 @@ export interface Note {
   userId: string;
 }
 
-// Create an Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api/v1', // Your backend URL
+  baseURL: 'http://localhost:3000/api/v1', // backend URL
 });
 
-// Use an interceptor to automatically add the auth token to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
@@ -29,7 +24,6 @@ api.interceptors.request.use(
   }
 );
 
-// Define your API functions
 export const signupUser = (data: any) => api.post('/signup', data);
 export const verifyOtp = (data: any) => api.post('/verify-otp', data);
 export const signinUser = (data: any) => api.post('/signin', data);
