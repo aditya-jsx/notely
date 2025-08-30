@@ -13,7 +13,7 @@ import { sendVerificationEmail } from "./utils/mailer";
 import passport = require("passport");
 import { CLIENT_URL } from "./config";
 import "./auth/passport";
-
+import helmet from "helmet";
 
 const app = express();
 
@@ -21,6 +21,22 @@ app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 
+
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'"],
+      },
+    },
+  })
+);
 
 
 

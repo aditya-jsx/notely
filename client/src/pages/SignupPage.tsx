@@ -5,6 +5,7 @@ import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { signupUser, verifyOtp } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const signupSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -82,6 +83,14 @@ const SignupPage = () => {
             </form>
           </>
         )}
+
+        <p className="text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <Link to="/signin" className="font-medium text-blue-600 hover:text-blue-500">
+            Sign In
+          </Link>
+        </p>
+
         {error && <p className="mt-4 text-center text-red-500">{error}</p>}
       </div>
     </div>

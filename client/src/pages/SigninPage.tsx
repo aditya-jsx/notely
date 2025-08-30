@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { signinUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const signinSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -52,6 +53,14 @@ const SigninPage = () => {
         <a href="http://localhost:3000/api/v1/auth/google" className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
           Sign in with Google
         </a>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+            Sign Up
+          </Link>
+        </p>
+        
         {error && <p className="mt-4 text-center text-red-500">{error}</p>}
       </div>
     </div>
