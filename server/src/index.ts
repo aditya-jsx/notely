@@ -2,7 +2,7 @@ import express = require("express");
 import mongoose = require("mongoose");
 import jwt = require("jsonwebtoken");
 import z = require("zod");
-import bcrypt = require("bcrypt");
+import bcrypt = require("bcryptjs");
 import { UserModel } from "./db";
 import { NoteModel } from "./db";
 import { Auth } from "./middleware";
@@ -197,12 +197,10 @@ app.post("/api/v1/signin", async (req, res)=>{
 
         const user = await UserModel.findOne({email: email});
     
-        if(!user){
-
+        if(!user || !user.password){
             return res.status(403).json({
                 msg: "Invalid email or password"
-            })
-
+            });
         }
     
         const passwordMatch = await bcrypt.compare(password, user.password);
