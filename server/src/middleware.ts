@@ -20,7 +20,7 @@ export function Auth(req: Request, res: Response, next: NextFunction){
     if(!authHeader || !authHeader.startsWith('Bearer ')){
         return res.status(401).json({msg: "No token provided or malformed header"})
     }
-    const token = authHeader.split(' ')[1]; // extracting the token from the bearer
+    const token = authHeader.split(' ')[1];
 
     if(!token){
         return res.status(401).json({

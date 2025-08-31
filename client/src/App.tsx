@@ -12,11 +12,11 @@ function App() {
   const { login } = useAuth();
 
   useEffect(() => {
-    // This handles the redirect from the Google OAuth callback
+
     const token = searchParams.get('token');
     if (token) {
       login(token);
-      // Clean the URL and navigate to the welcome page
+
       navigate('/welcome', { replace: true });
     }
   }, [searchParams, login, navigate]);
