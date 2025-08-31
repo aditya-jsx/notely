@@ -51,8 +51,8 @@ const SigninPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white p-4">
-      <div className="flex bg-white rounded-2xl overflow-hidden w-full max-w-5xl">
+    <div className="flex justify-center items-center min-h-screen lg:bg-gray-100 bg-white p-4">
+      <div className="flex bg-white rounded-2xl lg:shadow-lg shadow-none overflow-hidden w-full max-w-5xl">
         
         <div className="flex items-center absolute lg:ml-5 ml-38 mt-4 gap-2">
           <img src={logo} alt="logo" className='w-5' />
