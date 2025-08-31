@@ -51,15 +51,15 @@ const SigninPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-      <div className="flex bg-white rounded-2xl shadow-lg overflow-hidden w-full max-w-5xl">
+    <div className="flex justify-center items-center min-h-screen bg-white p-4">
+      <div className="flex bg-white rounded-2xl overflow-hidden w-full max-w-5xl">
         
         <div className="flex items-center absolute lg:ml-5 ml-38 mt-4 gap-2">
           <img src={logo} alt="logo" className='w-5' />
           <span className="font-semibold text-gray-800 text-lg">HD</span>
         </div>
         {/* Left Section: Form */}
-        <div className="w-full lg:w-[40%] p-8 sm:p-12 flex flex-col justify-center lg:mt-0 mt-8">
+        <div className="w-full lg:w-[40%] p-8 sm:p-12 flex flex-col justify-center lg:mt-0 mt-8 gap-3">
 
           <h2 className="text-3xl font-bold text-gray-900 text-center lg:text-start">Sign in</h2>
           <p className="text-gray-600 mb-6 text-center lg:text-start">
