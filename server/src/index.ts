@@ -8,7 +8,7 @@ import { UserModel } from "./db";
 import { NoteModel } from "./db";
 import { Auth } from "./middleware";
 import { JWT_USER_PASSWORD, MONGO_URL, GOOGLE_CLIENT_ID } from "./config";
-// import { CLIENT_URL } from "./config";
+import { CLIENT_URL } from "./config";
 import { sendVerificationEmail } from "./utils/mailer";
 import helmet from "helmet";
 import { OAuth2Client } from "google-auth-library";
@@ -16,10 +16,12 @@ import { OAuth2Client } from "google-auth-library";
 const app = express();
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-const clientURL = "https://notely-khaki-psi.vercel.app/"; 
+if (CLIENT_URL) {
+  app.use(cors({ origin: CLIENT_URL }));
+}
 
-app.use(cors({
-  origin: clientURL
+app.use(helmet({
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
 }));
 
 app.use(express.json());
