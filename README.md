@@ -154,11 +154,39 @@ Refer to [Vercel Docs](https://vercel.com/docs) and [Render Docs](https://render
 
 ```
 /
-├── client/         # React frontend
+├── client/
 │   ├── public/
+│   │   ├── auth-image.png     # Decorative image for auth pages
+│   │   └── icon.png           # App logo
 │   ├── src/
-│   └── ...
-└── server/         # Node.js Express backend
+│   │   ├── components/
+│   │   │   └── ProtectedRoute.tsx # Protects routes that require authentication
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx    # React Context for managing global auth state (user, token)
+│   │   ├── pages/
+│   │   │   ├── SigninPage.tsx     # Component for the Sign In page
+│   │   │   ├── SignupPage.tsx     # Component for the Sign Up page
+│   │   │   └── WelcomePage.tsx    # The main dashboard for authenticated users
+│   │   ├── services/
+│   │   │   └── api.ts             # Axios instance and API call definitions
+│   │   ├── App.tsx                # Main app component with React Router setup
+│   │   ├── index.css              # Global styles and Tailwind CSS imports
+│   │   └── main.tsx               # Application entry point, renders the App component
+│   ├── .env                     # Frontend environment variables (VITE_GOOGLE_CLIENT_ID)
+│   ├── package.json             # Frontend dependencies and scripts
+│   ├── tsconfig.json            # TypeScript configuration for the client
+│   └── vercel.json              # Vercel deployment configuration for SPA rewrites
+│
+└── server/
     ├── src/
-    └── ...
+    │   ├── utils/
+    │   │   └── mailer.ts        # Nodemailer setup for sending OTP emails
+    │   ├── config.ts            # Loads and exports all environment variables
+    │   ├── db.ts                # Mongoose schemas for Users and Notes
+    │   ├── index.ts             # Main Express server file, defines all API routes
+    │   └── middleware.ts        # JWT authentication middleware to protect routes
+    ├── .env                     # Backend environment variables (database, secrets, etc.)
+    ├── package.json             # Backend dependencies and scripts
+    └── tsconfig.json            # TypeScript configuration for the server
+
 ```
