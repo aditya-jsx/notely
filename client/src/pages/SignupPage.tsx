@@ -146,7 +146,7 @@ const SignupPage = () => {
           {error && <p className="mt-4 text-center text-red-500">{error}</p>}
         </div>
 
-        {/* Right Section: Image - Hidden on screens smaller than lg */}
+        {/* Right Section */}
         <div className="hidden lg:flex w-[60%] relative items-center justify-center pt-1 pr-1">
           <img src={Auth_img} alt="Abstract illustration" className="h-[42.5rem] w-[43rem] object-fit" />
         </div>

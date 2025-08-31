@@ -90,7 +90,9 @@ app.post("/api/v1/auth/google/verify", async (req, res) => {
             return res.status(500).json({ msg: "Server configuration error." });
         }
 
-        const token = jwt.sign({ userId: user._id.toString() }, JWT_USER_PASSWORD);
+        // const token = jwt.sign({ userId: user._id.toString() }, JWT_USER_PASSWORD);
+
+        const token = jwt.sign({ userId: user._id.toString(), name: user.name, email: user.email }, JWT_USER_PASSWORD);
 
         return res.status(200).json({
             msg: "Sign in successful",
@@ -190,7 +192,8 @@ app.post("/api/v1/verify-otp", async (req, res) => {
             console.error("JWT secret is not configured.");
             return res.status(500).json({ msg: "Server configuration error." });
         }
-        const token = jwt.sign({ userId: user._id.toString() }, JWT_USER_PASSWORD);
+        // const token = jwt.sign({ userId: user._id.toString() }, JWT_USER_PASSWORD);
+        const token = jwt.sign({ userId: user._id.toString(), name: user.name, email: user.email }, JWT_USER_PASSWORD);
         return res.status(200).json({
             msg: "Email verified successfully.",
             token: token

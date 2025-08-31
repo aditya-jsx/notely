@@ -1,11 +1,11 @@
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
-
 interface User {
   userId: string;
+  name?: string;
+  email?: string;
 }
-
 
 interface AuthContextType {
   token: string | null;
@@ -16,9 +16,7 @@ interface AuthContextType {
   logout: () => void;
 }
 
-
 const AuthContext = createContext<AuthContextType | null>(null);
-
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -26,12 +24,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-
     const storedToken = localStorage.getItem('authToken');
     if (storedToken) {
       setToken(storedToken);
-      const decodedUser = jwtDecode<User>(storedToken);
-      setUser(decodedUser);
+      try {
+        const decodedUser = jwtDecode<User>(storedToken);
+        setUser(decodedUser);
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+        localStorage.removeItem('authToken');
+      }
     }
     setIsLoading(false);
   }, []);
@@ -39,8 +41,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (newToken: string) => {
     localStorage.setItem('authToken', newToken);
     setToken(newToken);
-    const decodedUser = jwtDecode<User>(newToken);
-    setUser(decodedUser);
+    try {
+        const decodedUser = jwtDecode<User>(newToken);
+        setUser(decodedUser);
+    } catch (error) {
+        console.error("Failed to decode token:", error);
+    }
   };
 
   const logout = () => {
@@ -60,7 +66,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
