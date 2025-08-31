@@ -22,7 +22,7 @@ const WelcomePage = () => {
   const [editingNote, setEditingNote] = useState<Note | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { register, handleSubmit, reset, setValue } = useForm<NewNoteData>();
+  const { register, handleSubmit, reset } = useForm<NewNoteData>();
 
   const fetchNotes = async () => {
     try {
